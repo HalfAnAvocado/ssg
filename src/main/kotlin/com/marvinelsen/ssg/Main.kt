@@ -7,6 +7,7 @@ import com.marvinelsen.ssg.config.YamlConfigLoader
 import com.marvinelsen.ssg.helpers.Helpers
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
 import kotlin.io.path.div
@@ -31,7 +32,7 @@ fun main() {
             .build()
         val renderedTemplate = template.apply(context)
 
-        val outputDirectory = config.destinationDirectory / it.relativeUrl
+        val outputDirectory = Path(config.destinationDirectory.toString(), it.relativeUrl)
         val outputFile = outputDirectory / "index.html"
         outputDirectory.createDirectories()
         outputFile.createFile()
