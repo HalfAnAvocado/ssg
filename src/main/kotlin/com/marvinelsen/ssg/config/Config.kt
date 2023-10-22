@@ -16,6 +16,7 @@ data class Config(
     val baseUrl: URIAsString,
     val sourceDirectory: PathAsString = Path("pages"),
     val destinationDirectory: PathAsString = Path("_site"),
+    val templatesDirectory: PathAsString = Path("templates"),
     val license: License = License(name = "All Rights Reserved", link = baseUrl),
     val author: Author,
     val pages: List<Page>,

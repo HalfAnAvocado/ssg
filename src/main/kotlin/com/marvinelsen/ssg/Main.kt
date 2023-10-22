@@ -17,7 +17,7 @@ import kotlin.io.path.writeText
 fun main() {
     val config = YamlConfigLoader.loadConfig(Path("config.yaml").inputStream().buffered())
 
-    val templateLoader = FileTemplateLoader("templates", ".html")
+    val templateLoader = FileTemplateLoader(config.templatesDirectory.toFile(), ".html")
     val handlebars = Handlebars(templateLoader)
     handlebars.registerHelpers(Helpers())
     val template = handlebars.compile("base")
