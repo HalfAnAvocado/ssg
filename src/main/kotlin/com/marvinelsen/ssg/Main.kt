@@ -3,6 +3,7 @@ package com.marvinelsen.ssg
 import com.github.jknack.handlebars.Context
 import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.io.FileTemplateLoader
+import com.marvinelsen.ssg.config.Config
 import com.marvinelsen.ssg.config.YamlConfigLoader
 import com.marvinelsen.ssg.helpers.Helpers
 import java.io.File
@@ -14,12 +15,16 @@ import kotlin.io.path.div
 import kotlin.io.path.inputStream
 import kotlin.io.path.writeText
 
-fun main() {
-    val config = YamlConfigLoader.loadConfig(Path("config.yaml").inputStream().buffered())
-
+fun initHandlebars(config: Config): Handlebars {
     val templateLoader = FileTemplateLoader(config.templatesDirectory.toFile(), ".html")
     val handlebars = Handlebars(templateLoader)
     handlebars.registerHelpers(Helpers())
+    return handlebars
+}
+
+fun main() {
+    val config = YamlConfigLoader.loadConfig(Path("config.yaml").inputStream().buffered())
+    val handlebars = initHandlebars(config)
 
     val outputFiles = mutableListOf<Path>()
     config.pages.forEach {
