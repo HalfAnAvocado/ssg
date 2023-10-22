@@ -20,7 +20,6 @@ fun main() {
     val templateLoader = FileTemplateLoader(config.templatesDirectory.toFile(), ".html")
     val handlebars = Handlebars(templateLoader)
     handlebars.registerHelpers(Helpers())
-    val template = handlebars.compile("base")
 
     val outputFiles = mutableListOf<Path>()
     config.pages.forEach {
@@ -31,6 +30,7 @@ fun main() {
             .combine("page", it)
             .combine("content", content)
             .build()
+        val template = handlebars.compile(it.template)
         val renderedTemplate = template.apply(context)
 
         val outputDirectory = Path(config.destinationDirectory.toString(), it.relativeUrl)

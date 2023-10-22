@@ -37,6 +37,7 @@ data class Page(
     val title: String,
     val description: String = "",
     val sourceFile: String,
+    val template: String = "base",
     @SerialName("relativeURL")
     val relativeUrl: String,
     val keywords: List<String> = emptyList(),
