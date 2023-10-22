@@ -11,10 +11,11 @@ import kotlin.io.path.Path
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
 import kotlin.io.path.div
+import kotlin.io.path.inputStream
 import kotlin.io.path.writeText
 
 fun main() {
-    val config = YamlConfigLoader.loadConfig(File("config.yaml").inputStream())
+    val config = YamlConfigLoader.loadConfig(Path("config.yaml").inputStream().buffered())
 
     val templateLoader = FileTemplateLoader("templates", ".html")
     val handlebars = Handlebars(templateLoader)
