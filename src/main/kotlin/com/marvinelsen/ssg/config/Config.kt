@@ -12,8 +12,11 @@ typealias PathAsString = @Serializable(with = PathSerializer::class) Path
 
 @Serializable
 data class Config(
-    val site: Site,
-    val license: License,
+    @SerialName("baseURL")
+    val baseUrl: URIAsString,
+    val sourceDirectory: PathAsString = Path("pages"),
+    val destinationDirectory: PathAsString = Path("_site"),
+    val license: License = License(name = "All Rights Reserved", link = baseUrl),
     val author: Author,
     val pages: List<Page>,
     val postProcessing: PostProcessing = PostProcessing(),
@@ -26,32 +29,25 @@ data class PostProcessing(
 )
 
 @Serializable
-data class Author(val name: String, val email: String, val website: String)
-
-@Serializable
-data class Site(
-    val title: String,
-    val description: String = "",
-    val baseUrl: String,
-    val outputDirectory: String = "site",
-)
+data class Author(val name: String, val email: String, val website: URIAsString)
 
 @Serializable
 data class Page(
     val title: String,
     val description: String = "",
-    val relativeUrl: String = "",
-    val source: String,
+    val sourceFile: String,
+    @SerialName("relativeURL")
+    val relativeUrl: String,
     val keywords: List<String> = emptyList(),
     val language: String,
     @Transient var isCurrentPage: Boolean = false,
 )
 
 @Serializable
-data class License(val name: String, val url: String)
+data class License(val name: String, val link: URIAsString)
 
 @Serializable
-data class Tidy(@SerialName("enable") val isEnabled: Boolean = false, val configFile: String = "")
+data class Tidy(@SerialName("enable") val isEnabled: Boolean = false, val configFile: PathAsString = Path("tidy-config"))
 
 
 @Serializable

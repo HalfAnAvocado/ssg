@@ -6,6 +6,11 @@ import com.github.jknack.handlebars.io.FileTemplateLoader
 import com.marvinelsen.ssg.config.YamlConfigLoader
 import com.marvinelsen.ssg.helpers.Helpers
 import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.createDirectories
+import kotlin.io.path.createFile
+import kotlin.io.path.div
+import kotlin.io.path.writeText
 
 fun main() {
     val config = YamlConfigLoader.loadConfig(File("config.yaml").inputStream())
@@ -15,10 +20,10 @@ fun main() {
     handlebars.registerHelpers(Helpers())
     val template = handlebars.compile("base")
 
-    val outputFiles = mutableListOf<File>()
+    val outputFiles = mutableListOf<Path>()
     config.pages.forEach {
         it.isCurrentPage = true
-        val content = File("pages/", it.source).readText()
+        val content = File("pages/", it.sourceFile).readText()
         val context: Context = Context
             .newBuilder(config)
             .combine("page", it)
@@ -26,13 +31,13 @@ fun main() {
             .build()
         val renderedTemplate = template.apply(context)
 
-        val outputDirectory = File(config.site.outputDirectory, it.relativeUrl)
-        val outputFile = File(outputDirectory, "index.html")
-        outputDirectory.mkdirs()
-        outputFile.createNewFile()
+        val outputDirectory = config.destinationDirectory / it.relativeUrl
+        val outputFile = outputDirectory / "index.html"
+        outputDirectory.createDirectories()
+        outputFile.createFile()
         outputFile.writeText(renderedTemplate)
         it.isCurrentPage = false
-        outputFiles += outputFile
+        outputFiles.add(outputFile)
     }
 
     if (config.postProcessing.tidy.isEnabled) {
@@ -42,7 +47,7 @@ fun main() {
                 "-modify",
                 "-quiet",
                 "-config",
-                config.postProcessing.tidy.configFile,
+                config.postProcessing.tidy.configFile.toString(),
             ) + outputFiles.map { it.toString() }
         )
             .redirectOutput(ProcessBuilder.Redirect.INHERIT)
