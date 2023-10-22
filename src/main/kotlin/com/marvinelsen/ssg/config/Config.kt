@@ -1,8 +1,14 @@
 package com.marvinelsen.ssg.config
 
+import java.net.URI
+import java.nio.file.Path
+import kotlin.io.path.Path
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+
+typealias URIAsString = @Serializable(with = URISerializer::class) URI
+typealias PathAsString = @Serializable(with = PathSerializer::class) Path
 
 @Serializable
 data class Config(
