@@ -8,11 +8,15 @@ import com.marvinelsen.ssg.config.YamlConfigLoader
 import com.marvinelsen.ssg.helpers.Helpers
 import java.io.File
 import java.nio.file.Path
+import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
+import kotlin.io.path.copyToRecursively
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
+import kotlin.io.path.createParentDirectories
 import kotlin.io.path.div
 import kotlin.io.path.inputStream
+import kotlin.io.path.notExists
 import kotlin.io.path.writeText
 
 fun initHandlebars(config: Config): Handlebars {
@@ -22,6 +26,7 @@ fun initHandlebars(config: Config): Handlebars {
     return handlebars
 }
 
+@OptIn(ExperimentalPathApi::class)
 fun main() {
     val config = YamlConfigLoader.loadConfig(Path("config.yaml").inputStream().buffered())
     val handlebars = initHandlebars(config)
@@ -41,7 +46,7 @@ fun main() {
         val outputDirectory = Path(config.destinationDirectory.toString(), it.relativeUrl)
         val outputFile = outputDirectory / "index.html"
         outputDirectory.createDirectories()
-        outputFile.createFile()
+        if (outputFile.notExists()) outputFile.createFile()
         outputFile.writeText(renderedTemplate)
         it.isCurrentPage = false
         outputFiles.add(outputFile)
@@ -62,4 +67,39 @@ fun main() {
             .start()
             .waitFor()
     }
+
+    val stylesheetsDestinationDirectory = config.destinationDirectory / "css"
+    config.stylesheetsDirectory.copyToRecursively(
+        stylesheetsDestinationDirectory.createParentDirectories(),
+        followLinks = false,
+        overwrite = true
+    )
+
+    val fontsDestinationDirectory = config.destinationDirectory / "fonts"
+    config.fontsDirectory.copyToRecursively(
+        fontsDestinationDirectory.createParentDirectories(),
+        followLinks = false,
+        overwrite = true
+    )
+
+    val configDestinationDirectory = config.destinationDirectory
+    config.configDirectory.copyToRecursively(
+        configDestinationDirectory.createParentDirectories(),
+        followLinks = false,
+        overwrite = true
+    )
+
+    val imagesDestinationDirectory = config.destinationDirectory / "images"
+    config.imagesDirectory.copyToRecursively(
+        imagesDestinationDirectory.createParentDirectories(),
+        followLinks = false,
+        overwrite = true
+    )
+
+    val faviconsDestinationDirectory = config.destinationDirectory
+    config.faviconsDirectory.copyToRecursively(
+        faviconsDestinationDirectory.createParentDirectories(),
+        overwrite = true,
+        followLinks = false,
+    )
 }
