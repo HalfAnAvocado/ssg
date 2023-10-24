@@ -102,4 +102,12 @@ fun main() {
         overwrite = true,
         followLinks = false,
     )
+
+    if (config.postProcessing.deployment.isEnabled) {
+        ProcessBuilder(config.postProcessing.deployment.command.split(" "))
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .start()
+            .waitFor()
+    }
 }
